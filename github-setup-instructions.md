@@ -25,17 +25,26 @@ git branch -M main
 git push -u origin main
 ```
 
-## 步骤3: 启用GitHub Pages
+## 步骤3: 自动部署 (GitHub Actions)
+
+我们已经创建了GitHub Actions工作流文件，会自动部署您的网站：
+
+1. 推送代码后，GitHub Actions会自动触发
+2. 访问仓库的 "Actions" 选项卡查看部署状态
+3. 等待工作流完成（通常需要1-2分钟）
+4. 部署完成后，网站将自动可用
+
+几分钟后，您的网站将在以下地址可用:
+`https://mizukisheena.github.io/qr-code-hider/login.html`
+
+### 备用方法: 手动启用GitHub Pages
+
+如果自动部署有问题，可以手动设置：
 
 1. 在GitHub仓库页面，点击 "Settings" 选项卡
 2. 在左侧菜单中找到 "Pages"
-3. 在 "Source" 部分选择 "Deploy from a branch"
-4. 选择分支: `main`
-5. 选择文件夹: `/ (root)`
-6. 点击 "Save"
-
-几分钟后，您的网站将在以下地址可用:
-`https://YOUR_USERNAME.github.io/qr-code-hider/login.html`
+3. 在 "Source" 部分选择 "GitHub Actions"
+4. 选择工作流: "Deploy static content to Pages"
 
 ## 访问说明
 

@@ -4,7 +4,7 @@
 
 ## 🔐 访问方式
 
-**在线访问**: [点击这里访问工具](https://你的用户名.github.io/qr-code-hider/login.html)  
+**在线访问**: [点击这里访问工具](https://mizukisheena.github.io/qr-code-hider/login.html)  
 **访问密码**: `codehider2025`
 
 > 注意：首次访问需要输入密码，验证后24小时内无需重复输入。
@@ -89,7 +89,7 @@
 ## 开始使用
 
 ### 在线使用 (推荐)
-访问在线版本: [二维码隐藏工具](https://你的用户名.github.io/qr-code-hider/login.html)  
+访问在线版本: [二维码隐藏工具](https://mizukisheena.github.io/qr-code-hider/login.html)  
 输入密码: `codehider2025`
 
 ### 本地使用
