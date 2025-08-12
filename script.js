@@ -289,9 +289,20 @@ class QRCodeHider {
 }
 
 // 页面加载完成后初始化
-document.addEventListener('DOMContentLoaded', () => {
-    new QRCodeHider();
-});
+function initializeApp() {
+    // 确保DOM完全加载
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            new QRCodeHider();
+        });
+    } else {
+        // DOM已经加载完成
+        new QRCodeHider();
+    }
+}
+
+// 立即调用初始化函数
+initializeApp();
 
 // 添加一些实用函数
 function showToast(message, type = 'info') {

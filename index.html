@@ -3,117 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>二维码隐藏工具</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>二维码隐藏工具 - 重定向中...</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        .redirect-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        .loading {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(79, 172, 254, 0.3);
+            border-radius: 50%;
+            border-top-color: #4facfe;
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        h1 { color: #333; margin-bottom: 15px; }
+        p { color: #666; margin-bottom: 20px; }
+        .manual-link {
+            color: #4facfe;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .manual-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🔍 二维码隐藏工具</h1>
-            <p>将二维码巧妙地隐藏在背景图中，保持扫描功能的同时避免平台检测</p>
-        </header>
-
-        <div class="upload-section">
-            <div class="upload-card">
-                <h3>📱 上传二维码</h3>
-                <div class="upload-area" id="qrUploadArea">
-                    <input type="file" id="qrInput" accept="image/*" style="display: none;">
-                    <div class="upload-placeholder">
-                        <div class="upload-icon">📱</div>
-                        <p>点击或拖拽上传二维码图片</p>
-                        <small>支持 PNG, JPG, JPEG 格式</small>
-                    </div>
-                </div>
-                <div class="preview" id="qrPreview"></div>
-            </div>
-
-            <div class="upload-card">
-                <h3>🖼️ 上传背景图</h3>
-                <div class="upload-area" id="bgUploadArea">
-                    <input type="file" id="bgInput" accept="image/*" style="display: none;">
-                    <div class="upload-placeholder">
-                        <div class="upload-icon">🖼️</div>
-                        <p>点击或拖拽上传背景图片</p>
-                        <small>支持 PNG, JPG, JPEG 格式</small>
-                    </div>
-                </div>
-                <div class="preview" id="bgPreview"></div>
-            </div>
-        </div>
-
-        <div class="controls-section" id="controlsSection" style="display: none;">
-            <div class="control-group">
-                <label for="opacity">二维码透明度:</label>
-                <input type="range" id="opacity" min="0.1" max="0.8" step="0.1" value="0.3">
-                <span id="opacityValue">0.3</span>
-            </div>
-
-            <div class="control-group">
-                <label for="blendMode">混合模式:</label>
-                <select id="blendMode">
-                    <option value="multiply">正片叠底 (推荐)</option>
-                    <option value="overlay">叠加</option>
-                    <option value="soft-light">柔光</option>
-                    <option value="hard-light">强光</option>
-                    <option value="color-burn">颜色加深</option>
-                    <option value="darken">变暗</option>
-                </select>
-            </div>
-
-            <div class="control-group">
-                <label for="position">二维码位置:</label>
-                <select id="position">
-                    <option value="center">居中</option>
-                    <option value="top-left">偏左上</option>
-                    <option value="top-right">偏右上</option>
-                    <option value="bottom-left">偏左下</option>
-                    <option value="bottom-right">偏右下</option>
-                </select>
-            </div>
-
-            <div class="control-group">
-                <label for="size">二维码大小:</label>
-                <input type="range" id="size" min="50" max="300" step="10" value="150">
-                <span id="sizeValue">150px</span>
-            </div>
-
-            <div class="button-group">
-                <button id="processBtn" class="primary-btn">🎨 生成隐藏图片</button>
-                <button id="resetBtn" class="secondary-btn">🔄 重置</button>
-            </div>
-        </div>
-
-        <div class="result-section" id="resultSection" style="display: none;">
-            <h3>✨ 处理结果</h3>
-            <div class="result-preview">
-                <canvas id="resultCanvas"></canvas>
-            </div>
-            <div class="result-actions">
-                <button id="downloadBtn" class="primary-btn">💾 下载图片</button>
-                <button id="newProcessBtn" class="secondary-btn">🆕 处理新图片</button>
-            </div>
-            <div class="tips">
-                <h4>💡 使用提示:</h4>
-                <ul>
-                    <li>建议选择颜色对比度较高的背景图，效果更好</li>
-                    <li>二维码透明度建议设置在0.2-0.4之间</li>
-                    <li>正片叠底混合模式通常效果最佳</li>
-                    <li>生成的图片可以正常扫描，但视觉上不易察觉</li>
-                </ul>
-            </div>
-        </div>
+    <div class="redirect-container">
+        <div class="loading"></div>
+        <h1>🔍 二维码隐藏工具</h1>
+        <p>正在重定向到登录页面...</p>
+        <p><a href="login.html" class="manual-link">如果没有自动跳转，请点击这里</a></p>
     </div>
 
-    <canvas id="hiddenCanvas" style="display: none;"></canvas>
-    
     <script>
-        // 会话验证
+        // 检查是否有有效会话
         function checkSession() {
             const sessionToken = localStorage.getItem('qr_hider_session');
             const sessionTime = localStorage.getItem('qr_hider_session_time');
             
             if (!sessionToken || !sessionTime) {
-                window.location.href = 'login.html';
                 return false;
             }
             
@@ -124,21 +71,21 @@
             if (sessionAge >= 24 * 60 * 60 * 1000) {
                 localStorage.removeItem('qr_hider_session');
                 localStorage.removeItem('qr_hider_session_time');
-                window.location.href = 'login.html';
                 return false;
             }
             
             return true;
         }
-        
-        // 页面加载时检查会话
-        if (!checkSession()) {
-            // 如果会话无效，脚本将停止执行
+
+        // 立即检查并重定向
+        if (checkSession()) {
+            // 有有效会话，直接跳转到工具页面
+            window.location.href = 'tool.html';
         } else {
-            // 会话有效，加载主脚本
-            const script = document.createElement('script');
-            script.src = 'script.js';
-            document.body.appendChild(script);
+            // 没有会话，跳转到登录页面
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1500);
         }
     </script>
 </body>
