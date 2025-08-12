@@ -1,0 +1,368 @@
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* 头部样式 */
+header {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    padding: 40px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* 上传区域 */
+.upload-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    padding: 40px;
+}
+
+.upload-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.upload-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.upload-card h3 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+    text-align: center;
+}
+
+.upload-area {
+    border: 3px dashed #ddd;
+    border-radius: 10px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #fafafa;
+}
+
+.upload-area:hover {
+    border-color: #4facfe;
+    background: #f0f8ff;
+}
+
+.upload-area.dragover {
+    border-color: #00f2fe;
+    background: #e6f7ff;
+    transform: scale(1.02);
+}
+
+.upload-placeholder {
+    color: #666;
+}
+
+.upload-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.upload-placeholder p {
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.upload-placeholder small {
+    color: #999;
+}
+
+.preview {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.preview img {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* 控制面板 */
+.controls-section {
+    padding: 40px;
+    background: #f8f9fa;
+    border-top: 1px solid #eee;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+    gap: 15px;
+}
+
+.control-group label {
+    font-weight: 600;
+    color: #333;
+    min-width: 120px;
+}
+
+.control-group input[type="range"] {
+    flex: 1;
+    height: 8px;
+    border-radius: 5px;
+    background: #ddd;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.control-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #4facfe;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.control-group select {
+    flex: 1;
+    padding: 10px 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: white;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.control-group select:focus {
+    border-color: #4facfe;
+}
+
+.control-group span {
+    font-weight: 600;
+    color: #4facfe;
+    min-width: 60px;
+    text-align: right;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+/* 按钮样式 */
+.primary-btn {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
+}
+
+.primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+}
+
+.secondary-btn {
+    background: white;
+    color: #666;
+    border: 2px solid #ddd;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.secondary-btn:hover {
+    border-color: #4facfe;
+    color: #4facfe;
+    transform: translateY(-2px);
+}
+
+/* 结果区域 */
+.result-section {
+    padding: 40px;
+    background: white;
+    text-align: center;
+}
+
+.result-section h3 {
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 1.5rem;
+}
+
+.result-preview {
+    margin-bottom: 30px;
+}
+
+.result-preview canvas {
+    max-width: 100%;
+    max-height: 500px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.result-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.tips {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 25px;
+    text-align: left;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.tips h4 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.tips ul {
+    list-style: none;
+    padding: 0;
+}
+
+.tips li {
+    padding: 8px 0;
+    color: #666;
+    position: relative;
+    padding-left: 25px;
+}
+
+.tips li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #4facfe;
+    font-weight: bold;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .upload-section {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 20px;
+    }
+    
+    .container {
+        margin: 10px;
+        border-radius: 15px;
+    }
+    
+    header {
+        padding: 30px 20px;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    .controls-section {
+        padding: 20px;
+    }
+    
+    .control-group {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    
+    .control-group label {
+        min-width: auto;
+    }
+    
+    .button-group {
+        flex-direction: column;
+    }
+    
+    .result-actions {
+        flex-direction: column;
+    }
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.controls-section,
+.result-section {
+    animation: fadeIn 0.5s ease;
+}
+
+/* 加载动画 */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
