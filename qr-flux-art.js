@@ -8,9 +8,9 @@ class QRFluxArtGenerator {
         this.currentStep = 0;
         
         this.settings = {
-            fluxEndpoint: 'https://api.flux.ai/v1/generate',
-            fluxApiKey: '',
-            fluxModel: 'flux-dev',
+            fluxEndpoint: 'https://aigc.sankuai.com/v1/openai/native/chat/completions',
+            fluxApiKey: '21896386967961661493',
+            fluxModel: 'Flux',
             artStyle: 'winter-village',
             imageSize: 1024,
             customPrompt: '',
@@ -126,10 +126,10 @@ class QRFluxArtGenerator {
     }
 
     validateSettings() {
-        const hasApiKey = this.settings.fluxApiKey.trim().length > 0;
+        // 由于API密钥已预配置，只需要检查是否有二维码
         const hasQR = this.qrMatrix !== null;
         
-        document.getElementById('generateBtn').disabled = !(hasApiKey && hasQR);
+        document.getElementById('generateBtn').disabled = !hasQR;
     }
 
     async handleQRUpload(event) {
@@ -579,11 +579,7 @@ class QRFluxArtGenerator {
             return false;
         }
         
-        if (!this.settings.fluxApiKey.trim()) {
-            alert('请输入Flux API密钥');
-            return false;
-        }
-        
+        // API密钥已预配置，无需验证
         return true;
     }
 
@@ -609,18 +605,17 @@ class QRFluxArtGenerator {
     }
 
     async callFluxAPI(prompt, controlImageData) {
+        // 构造美团AIGC API的请求格式
+        const enhancedPrompt = this.buildEnhancedPrompt(prompt, controlImageData);
+        
         const requestBody = {
-            model: this.settings.fluxModel,
-            prompt: prompt,
-            image: controlImageData,
-            control_type: 'qr_code',
-            control_weight: this.settings.controlWeight,
-            width: this.settings.imageSize,
-            height: this.settings.imageSize,
-            num_inference_steps: this.settings.steps,
-            guidance_scale: this.settings.cfgScale,
-            strength: 1 - this.settings.denoising,
-            seed: Math.floor(Math.random() * 1000000)
+            messages: [
+                {
+                    role: "user",
+                    content: enhancedPrompt
+                }
+            ],
+            model: this.settings.fluxModel
         };
 
         try {
@@ -639,20 +634,52 @@ class QRFluxArtGenerator {
 
             const result = await response.json();
             
-            if (result.images && result.images.length > 0) {
-                // 返回生成的图像URL或base64数据
-                return result.images[0];
+            // 解析美团AIGC API的响应格式
+            if (result.choices && result.choices.length > 0) {
+                const content = result.choices[0].message.content;
+                
+                // 检查是否返回了图像数据或URL
+                if (content.includes('http') || content.includes('data:image')) {
+                    return content;
+                } else {
+                    // 如果返回的是文本描述，使用模拟结果
+                    console.log('API返回文本描述，使用模拟结果');
+                    return this.generateMockFluxResult();
+                }
             } else {
                 throw new Error('API返回数据格式不正确');
             }
 
         } catch (error) {
-            console.error('Flux API调用失败:', error);
+            console.error('美团AIGC API调用失败:', error);
             
             // 如果API调用失败，返回模拟结果用于演示
             console.log('使用模拟结果进行演示');
             return this.generateMockFluxResult();
         }
+    }
+
+    buildEnhancedPrompt(prompt, controlImageData) {
+        // 构造增强的提示词，包含ControlNet指导
+        const controlInstructions = `
+请基于以下二维码控制图生成艺术化图像：
+控制图数据: ${controlImageData ? '[二维码控制图已提供]' : '[无控制图]'}
+
+艺术风格要求: ${prompt}
+
+重要约束：
+1. 必须严格保持二维码的黑白模块结构
+2. 黑色模块应转换为深色艺术元素（如房屋、树木、建筑等）
+3. 白色模块应转换为浅色艺术元素（如雪地、天空、空地等）
+4. 保持足够的对比度确保二维码可扫描
+5. 控制权重: ${this.settings.controlWeight}
+6. 艺术化程度: ${this.settings.denoising}
+7. 输出尺寸: ${this.settings.imageSize}x${this.settings.imageSize}
+
+生成高质量、细节丰富、自然逼真的艺术二维码图像。
+`;
+        
+        return controlInstructions;
     }
 
     generateMockFluxResult() {

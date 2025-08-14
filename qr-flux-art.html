@@ -357,8 +357,8 @@
     <div class="container">
         <header>
             <h1>🚀 二维码Flux艺术化工具</h1>
-            <p>基于Flux AI的专业级ControlNet二维码艺术生成</p>
-            <div class="version-badge" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">v6.0 Flux AI</div>
+            <p>基于美团AIGC Flux模型的专业级ControlNet二维码艺术生成</p>
+            <div class="version-badge" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">v6.0 美团Flux AI</div>
         </header>
 
         <div class="flux-container">
@@ -430,19 +430,17 @@
                     <h4>🔑 API设置</h4>
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="fluxEndpoint">Flux API端点</label>
-                            <input type="text" id="fluxEndpoint" placeholder="https://api.flux.ai/v1/generate" value="https://api.flux.ai/v1/generate">
+                            <label for="fluxEndpoint">美团AIGC API端点</label>
+                            <input type="text" id="fluxEndpoint" value="https://aigc.sankuai.com/v1/openai/native/chat/completions" readonly>
                         </div>
                         <div class="form-group">
-                            <label for="fluxApiKey">API密钥</label>
-                            <input type="password" id="fluxApiKey" placeholder="输入您的Flux API密钥">
+                            <label for="fluxApiKey">AppId (已预配置)</label>
+                            <input type="text" id="fluxApiKey" value="21896386967961661493" readonly>
                         </div>
                         <div class="form-group">
                             <label for="fluxModel">模型选择</label>
                             <select id="fluxModel">
-                                <option value="flux-pro">Flux Pro - 最高质量</option>
-                                <option value="flux-dev" selected>Flux Dev - 平衡性能</option>
-                                <option value="flux-schnell">Flux Schnell - 快速生成</option>
+                                <option value="Flux" selected>Flux - 美团AIGC模型</option>
                             </select>
                         </div>
                     </div>
