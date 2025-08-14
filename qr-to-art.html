@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二维码艺术化工具 - AI生成</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="qr-art-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 二维码艺术化工具</h1>
+            <p>上传二维码，AI生成看似普通图片但实际可扫描的艺术作品</p>
+            <div class="version-badge">v3.0 AI Art</div>
+        </header>
+
+        <!-- 上传区域 -->
+        <div class="upload-section">
+            <div class="upload-card centered">
+                <h3>📱 上传二维码</h3>
+                <div class="upload-area" id="qrUploadArea">
+                    <input type="file" id="qrInput" accept="image/*" style="display: none;">
+                    <div class="upload-placeholder">
+                        <div class="upload-icon">📱</div>
+                        <p>点击或拖拽上传二维码图片</p>
+                        <small>支持 PNG, JPG, JPEG 格式</small>
+                    </div>
+                </div>
+                <div class="preview" id="qrPreview"></div>
+            </div>
+        </div>
+
+        <!-- 二维码分析结果 -->
+        <div class="analysis-section" id="analysisSection" style="display: none;">
+            <h3>🔍 二维码分析</h3>
+            <div class="qr-info" id="qrInfo">
+                <!-- 二维码信息将显示在这里 -->
+            </div>
+        </div>
+
+        <!-- 风格选择区域 -->
+        <div class="style-section" id="styleSection" style="display: none;">
+            <h3>🎨 选择艺术风格</h3>
+            
+            <div class="style-categories">
+                <div class="category-tabs">
+                    <button class="tab-btn active" data-category="landscape">🏞️ 风景</button>
+                    <button class="tab-btn" data-category="architecture">🏛️ 建筑</button>
+                    <button class="tab-btn" data-category="abstract">🎭 抽象</button>
+                    <button class="tab-btn" data-category="nature">🌿 自然</button>
+                    <button class="tab-btn" data-category="custom">✨ 自定义</button>
+                </div>
+
+                <!-- 风景类 -->
+                <div class="style-grid" id="landscape-styles">
+                    <div class="style-option" data-style="winter-village">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzg3Q0VGQSIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+雪景村庄</dGV4dD4KPC9zdmc+" alt="雪景村庄">
+                        <h4>雪景村庄</h4>
+                        <p>温馨的雪地小屋，灯火通明</p>
+                    </div>
+                    <div class="style-option" data-style="mountain-lake">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzNCODJGNiIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+山湖倒影</dGV4dD4KPC9zdmc+" alt="山湖倒影">
+                        <h4>山湖倒影</h4>
+                        <p>宁静湖面倒映雪山</p>
+                    </div>
+                    <div class="style-option" data-style="forest-path">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzIyQzU1RSIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+森林小径</dGV4dD4KPC9zdmc+" alt="森林小径">
+                        <h4>森林小径</h4>
+                        <p>阳光透过树林的小路</p>
+                    </div>
+                </div>
+
+                <!-- 建筑类 -->
+                <div class="style-grid" id="architecture-styles" style="display: none;">
+                    <div class="style-option" data-style="japanese-temple">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI0Y1OUU0MiIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+日式庭院</dGV4dD4KPC9zdmc+" alt="日式庭院">
+                        <h4>日式庭院</h4>
+                        <p>古朴寺庙与樱花</p>
+                    </div>
+                    <div class="style-option" data-style="modern-city">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzZGNzNEMiIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+现代都市</dGV4dD4KPC9zdmc+" alt="现代都市">
+                        <h4>现代都市</h4>
+                        <p>璀璨夜景与霓虹</p>
+                    </div>
+                </div>
+
+                <!-- 抽象类 -->
+                <div class="style-grid" id="abstract-styles" style="display: none;">
+                    <div class="style-option" data-style="geometric-pattern">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI0VDNDA5OSIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+几何图案</dGV4dD4KPC9zdmc+" alt="几何图案">
+                        <h4>几何图案</h4>
+                        <p>规律的几何美学</p>
+                    </div>
+                </div>
+
+                <!-- 自然类 -->
+                <div class="style-grid" id="nature-styles" style="display: none;">
+                    <div class="style-option" data-style="flower-garden">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI0Y0N0JCOSIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+花园景色</dGV4dD4KPC9zdmc+" alt="花园景色">
+                        <h4>花园景色</h4>
+                        <p>繁花似锦的花园</p>
+                    </div>
+                </div>
+
+                <!-- 自定义 -->
+                <div class="custom-prompt" id="custom-styles" style="display: none;">
+                    <div class="prompt-input-group">
+                        <label for="customPrompt">自定义描述:</label>
+                        <textarea id="customPrompt" placeholder="描述你想要的画面风格，例如：一个充满魔幻色彩的森林，有发光的蘑菇和小精灵..."></textarea>
+                        <small>提示：描述越详细，生成效果越好</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 高级选项 -->
+            <div class="advanced-options">
+                <h4>🔧 高级选项</h4>
+                <div class="option-group">
+                    <label for="complexity">复杂度:</label>
+                    <select id="complexity">
+                        <option value="simple">简单 - 更容易扫描</option>
+                        <option value="moderate" selected>中等 - 平衡美观与可读性</option>
+                        <option value="complex">复杂 - 更具艺术性</option>
+                    </select>
+                </div>
+                <div class="option-group">
+                    <label for="colorScheme">色彩方案:</label>
+                    <select id="colorScheme">
+                        <option value="monochrome">黑白 - 最佳扫描性</option>
+                        <option value="duotone" selected>双色调 - 平衡效果</option>
+                        <option value="colorful">彩色 - 最佳视觉效果</option>
+                    </select>
+                </div>
+                <div class="option-group">
+                    <label for="artStyle">艺术风格:</label>
+                    <select id="artStyle">
+                        <option value="photorealistic" selected>写实风格</option>
+                        <option value="impressionist">印象派</option>
+                        <option value="minimalist">极简主义</option>
+                        <option value="surrealist">超现实主义</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="generation-controls">
+                <button id="generateBtn" class="primary-btn" disabled>
+                    🎨 生成艺术二维码
+                </button>
+                <div class="generation-info">
+                    <small>💡 生成时间约30-60秒，请耐心等待</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- 生成结果区域 -->
+        <div class="result-section" id="resultSection" style="display: none;">
+            <h3>✨ 生成结果</h3>
+            
+            <!-- 生成状态 -->
+            <div class="generation-status" id="generationStatus">
+                <div class="status-indicator">
+                    <div class="loading-spinner"></div>
+                    <span class="status-text">正在分析二维码结构...</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <!-- 结果展示 -->
+            <div class="result-display" id="resultDisplay" style="display: none;">
+                <div class="result-comparison">
+                    <div class="comparison-item">
+                        <h4>📱 原始二维码</h4>
+                        <div class="original-qr" id="originalQR"></div>
+                    </div>
+                    <div class="comparison-arrow">→</div>
+                    <div class="comparison-item">
+                        <h4>🎨 艺术化结果</h4>
+                        <div class="generated-art" id="generatedArt"></div>
+                    </div>
+                </div>
+
+                <!-- 验证结果 -->
+                <div class="verification-result" id="verificationResult">
+                    <div class="verification-item">
+                        <span class="label">扫描验证:</span>
+                        <span class="status" id="scanStatus">验证中...</span>
+                    </div>
+                    <div class="verification-item">
+                        <span class="label">数据匹配:</span>
+                        <span class="status" id="dataMatch">检查中...</span>
+                    </div>
+                    <div class="verification-item">
+                        <span class="label">艺术评分:</span>
+                        <span class="status" id="artScore">计算中...</span>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="result-actions">
+                    <button id="downloadArtBtn" class="primary-btn">💾 下载艺术二维码</button>
+                    <button id="regenerateBtn" class="secondary-btn">🔄 重新生成</button>
+                    <button id="newQRBtn" class="secondary-btn">📱 上传新二维码</button>
+                </div>
+
+                <!-- 使用提示 -->
+                <div class="usage-tips">
+                    <h4>📋 使用建议</h4>
+                    <ul id="usageTipsList">
+                        <!-- 动态生成的使用提示 -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 会话验证
+        function checkSession() {
+            const sessionToken = localStorage.getItem('qr_hider_session');
+            const sessionTime = localStorage.getItem('qr_hider_session_time');
+            
+            if (!sessionToken || !sessionTime) {
+                window.location.href = 'login.html';
+                return false;
+            }
+            
+            const now = new Date().getTime();
+            const sessionAge = now - parseInt(sessionTime);
+            
+            if (sessionAge >= 24 * 60 * 60 * 1000) {
+                localStorage.removeItem('qr_hider_session');
+                localStorage.removeItem('qr_hider_session_time');
+                window.location.href = 'login.html';
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // 页面加载时检查会话
+        if (!checkSession()) {
+            // 会话无效，停止执行
+        } else {
+            // 会话有效，加载主脚本
+            const script = document.createElement('script');
+            script.src = 'qr-art-script.js';
+            script.onload = function() {
+                console.log('QR Art script loaded successfully');
+                initializeQRArtApp();
+            };
+            document.body.appendChild(script);
+        }
+    </script>
+</body>
+</html>

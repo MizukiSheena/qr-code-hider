@@ -1,0 +1,476 @@
+/* 高级二维码隐藏工具 - 扩展样式 */
+
+/* 版本标识 */
+.version-badge {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ffa726 100%);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 10px;
+    display: inline-block;
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+/* 智能分析区域 */
+.analysis-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px 40px;
+    margin: 0;
+    border-radius: 0;
+}
+
+.analysis-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.analysis-header h3 {
+    margin: 0;
+    font-size: 1.4rem;
+}
+
+.analysis-results {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.analysis-summary h4 {
+    color: white;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+
+.analysis-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.analysis-item:last-child {
+    border-bottom: none;
+}
+
+.analysis-item .label {
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.analysis-item .value {
+    font-weight: 700;
+    color: #4facfe;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+/* 实时预览 */
+.quick-preview {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.quick-preview h4 {
+    color: white;
+    margin-bottom: 15px;
+}
+
+.preview-canvas {
+    max-width: 300px;
+    max-height: 200px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    background: white;
+}
+
+.preview-note {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+
+/* 控制区域增强 */
+.controls-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #eee;
+}
+
+.controls-header h3 {
+    margin: 0;
+    color: #333;
+}
+
+/* 高级模式切换 */
+.control-mode-switch {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.control-mode-switch label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+}
+
+.control-mode-switch input[type="checkbox"] {
+    display: none;
+}
+
+.switch-slider {
+    position: relative;
+    width: 50px;
+    height: 24px;
+    background: #ddd;
+    border-radius: 24px;
+    transition: all 0.3s ease;
+}
+
+.switch-slider:before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: white;
+    top: 2px;
+    left: 2px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.control-mode-switch input[type="checkbox"]:checked + .switch-slider {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.control-mode-switch input[type="checkbox"]:checked + .switch-slider:before {
+    transform: translateX(26px);
+}
+
+/* 控制区域分组 */
+.control-section {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+}
+
+.control-section h4 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+/* 高级控制样式 */
+.advanced-controls {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid #4facfe;
+}
+
+.advanced-controls h4 {
+    color: #4facfe;
+    border-bottom-color: #4facfe;
+}
+
+.control-hint {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* 预设按钮 */
+.preset-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.preset-btn {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid #ddd;
+    color: #666;
+    padding: 12px 8px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.preset-btn:hover {
+    border-color: #4facfe;
+    color: #4facfe;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(79, 172, 254, 0.2);
+}
+
+.preset-btn:active {
+    transform: translateY(0);
+}
+
+/* 结果统计 */
+.result-stats {
+    display: flex;
+    justify-content: space-around;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 25px;
+    border: 1px solid #ddd;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #4facfe;
+}
+
+/* 增强的控制组样式 */
+.control-group {
+    background: #fafafa;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #f0f0f0;
+    transition: all 0.3s ease;
+}
+
+.control-group:hover {
+    background: #f0f8ff;
+    border-color: #4facfe;
+}
+
+.control-group label {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+}
+
+/* 范围滑块增强 */
+.control-group input[type="range"] {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, #ddd 0%, #4facfe 0%);
+    outline: none;
+    -webkit-appearance: none;
+    margin: 10px 0;
+}
+
+.control-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    border: 2px solid white;
+}
+
+.control-group input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    border: 2px solid white;
+}
+
+/* 选择框增强 */
+.control-group select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: white;
+    outline: none;
+    transition: all 0.3s ease;
+    margin-top: 5px;
+}
+
+.control-group select:focus {
+    border-color: #4facfe;
+    box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+}
+
+/* 值显示增强 */
+.control-group span {
+    display: inline-block;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    min-width: 50px;
+    text-align: center;
+    margin-top: 5px;
+    float: right;
+}
+
+/* 动态提示样式 */
+#dynamicTips {
+    list-style: none;
+    padding: 0;
+}
+
+#dynamicTips li {
+    background: rgba(79, 172, 254, 0.1);
+    border-left: 4px solid #4facfe;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    border-radius: 0 8px 8px 0;
+    color: #333;
+}
+
+#dynamicTips li:before {
+    content: "💡";
+    margin-right: 8px;
+}
+
+/* 响应式设计增强 */
+@media (max-width: 768px) {
+    .analysis-section {
+        padding: 20px;
+    }
+    
+    .analysis-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .result-stats {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .preset-buttons {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .control-section {
+        padding: 20px 15px;
+    }
+    
+    .controls-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .preset-buttons {
+        grid-template-columns: 1fr;
+    }
+    
+    .version-badge {
+        font-size: 0.7rem;
+        padding: 4px 10px;
+    }
+}
+
+/* 加载动画增强 */
+.loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* 滑入动画 */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* 淡入动画 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.analysis-section,
+.control-section {
+    animation: fadeInUp 0.6s ease;
+}
+
+/* 脉冲动画 */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(79, 172, 254, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(79, 172, 254, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(79, 172, 254, 0);
+    }
+}
+
+.primary-btn:focus {
+    animation: pulse 2s infinite;
+}

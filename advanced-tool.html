@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高级二维码隐藏工具</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="advanced-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 高级二维码隐藏工具</h1>
+            <p>采用AI级别的像素级分析和智能融合算法，实现完美隐藏效果</p>
+            <div class="version-badge">v2.0 Advanced</div>
+        </header>
+
+        <div class="upload-section">
+            <div class="upload-card">
+                <h3>📱 上传二维码</h3>
+                <div class="upload-area" id="qrUploadArea">
+                    <input type="file" id="qrInput" accept="image/*" style="display: none;">
+                    <div class="upload-placeholder">
+                        <div class="upload-icon">📱</div>
+                        <p>点击或拖拽上传二维码图片</p>
+                        <small>支持 PNG, JPG, JPEG 格式</small>
+                    </div>
+                </div>
+                <div class="preview" id="qrPreview"></div>
+            </div>
+
+            <div class="upload-card">
+                <h3>🖼️ 上传背景图</h3>
+                <div class="upload-area" id="bgUploadArea">
+                    <input type="file" id="bgInput" accept="image/*" style="display: none;">
+                    <div class="upload-placeholder">
+                        <div class="upload-icon">🖼️</div>
+                        <p>点击或拖拽上传背景图片</p>
+                        <small>支持 PNG, JPG, JPEG 格式</small>
+                    </div>
+                </div>
+                <div class="preview" id="bgPreview"></div>
+            </div>
+        </div>
+
+        <!-- 智能分析区域 -->
+        <div class="analysis-section" id="analysisSection" style="display: none;">
+            <div class="analysis-header">
+                <h3>🤖 智能背景分析</h3>
+                <button id="analyzeBtn" class="primary-btn" style="display: none;">
+                    🔍 分析背景特征
+                </button>
+            </div>
+            
+            <div class="analysis-results" id="analysisResults" style="display: none;">
+                <!-- 分析结果将动态插入这里 -->
+            </div>
+
+            <!-- 实时预览 -->
+            <div class="quick-preview" id="quickPreviewContainer" style="display: none;">
+                <h4>⚡ 实时预览</h4>
+                <canvas id="quickPreview" class="preview-canvas"></canvas>
+                <p class="preview-note">实时预览（50%缩放）</p>
+            </div>
+        </div>
+
+        <div class="controls-section" id="controlsSection" style="display: none;">
+            <div class="controls-header">
+                <h3>🎛️ 融合控制</h3>
+                <div class="control-mode-switch">
+                    <label>
+                        <input type="checkbox" id="advancedMode" checked>
+                        <span class="switch-slider"></span>
+                        高级模式
+                    </label>
+                </div>
+            </div>
+
+            <!-- 基础控制 -->
+            <div class="control-section">
+                <h4>基础参数</h4>
+                
+                <div class="control-group">
+                    <label for="opacity">二维码透明度:</label>
+                    <input type="range" id="opacity" min="0.1" max="0.8" step="0.05" value="0.3">
+                    <span id="opacityValue">0.3</span>
+                </div>
+
+                <div class="control-group">
+                    <label for="blendMode">混合模式:</label>
+                    <select id="blendMode">
+                        <option value="multiply">正片叠底 (推荐)</option>
+                        <option value="overlay">叠加</option>
+                        <option value="soft-light">柔光</option>
+                        <option value="hard-light">强光</option>
+                        <option value="color-burn">颜色加深</option>
+                        <option value="darken">变暗</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="position">二维码位置:</label>
+                    <select id="position">
+                        <option value="center">居中</option>
+                        <option value="top-left">偏左上</option>
+                        <option value="top-right">偏右上</option>
+                        <option value="bottom-left">偏左下</option>
+                        <option value="bottom-right">偏右下</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="size">二维码大小:</label>
+                    <input type="range" id="size" min="50" max="400" step="10" value="150">
+                    <span id="sizeValue">150px</span>
+                </div>
+            </div>
+
+            <!-- 高级控制 -->
+            <div class="control-section advanced-controls" id="advancedControls">
+                <h4>🚀 高级参数</h4>
+                
+                <div class="control-group">
+                    <label for="edgeStrength">边缘增强强度:</label>
+                    <input type="range" id="edgeStrength" min="0" max="1" step="0.1" value="0.5">
+                    <span id="edgeStrengthValue">0.5</span>
+                    <div class="control-hint">控制二维码关键边缘的保持程度</div>
+                </div>
+
+                <div class="control-group">
+                    <label for="textureAdaption">纹理自适应:</label>
+                    <input type="range" id="textureAdaption" min="0" max="1" step="0.1" value="0.7">
+                    <span id="textureAdaptionValue">0.7</span>
+                    <div class="control-hint">根据背景纹理自动调整融合策略</div>
+                </div>
+
+                <div class="control-group">
+                    <label for="colorHarmony">色彩和谐度:</label>
+                    <input type="range" id="colorHarmony" min="0" max="1" step="0.1" value="0.6">
+                    <span id="colorHarmonyValue">0.6</span>
+                    <div class="control-hint">调整二维码与背景的颜色协调程度</div>
+                </div>
+
+                <div class="control-group">
+                    <label for="preserveReadability">可读性保证:</label>
+                    <input type="range" id="preserveReadability" min="0" max="1" step="0.1" value="0.8">
+                    <span id="preserveReadabilityValue">0.8</span>
+                    <div class="control-hint">确保二维码在隐藏后仍可被扫描</div>
+                </div>
+            </div>
+
+            <!-- 预设方案 -->
+            <div class="control-section">
+                <h4>🎯 预设方案</h4>
+                <div class="preset-buttons">
+                    <button class="preset-btn" data-preset="stealth">🥷 极致隐蔽</button>
+                    <button class="preset-btn" data-preset="balanced">⚖️ 平衡模式</button>
+                    <button class="preset-btn" data-preset="readable">👁️ 易读优先</button>
+                    <button class="preset-btn" data-preset="artistic">🎨 艺术效果</button>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button id="processBtn" class="primary-btn">🎨 生成隐藏图片</button>
+                <button id="resetBtn" class="secondary-btn">🔄 重置</button>
+            </div>
+        </div>
+
+        <div class="result-section" id="resultSection" style="display: none;">
+            <h3>✨ 处理结果</h3>
+            
+            <!-- 结果统计 -->
+            <div class="result-stats" id="resultStats">
+                <div class="stat-item">
+                    <span class="stat-label">隐藏效果:</span>
+                    <span class="stat-value" id="hidingScore">--</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">可读性:</span>
+                    <span class="stat-value" id="readabilityScore">--</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">处理时间:</span>
+                    <span class="stat-value" id="processingTime">--</span>
+                </div>
+            </div>
+
+            <div class="result-preview">
+                <canvas id="resultCanvas"></canvas>
+            </div>
+            
+            <div class="result-actions">
+                <button id="downloadBtn" class="primary-btn">💾 下载图片</button>
+                <button id="newProcessBtn" class="secondary-btn">🆕 处理新图片</button>
+                <button id="shareBtn" class="secondary-btn" style="display: none;">📤 分享结果</button>
+            </div>
+            
+            <div class="tips">
+                <h4>💡 使用提示:</h4>
+                <ul id="dynamicTips">
+                    <!-- 动态提示将插入这里 -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 隐藏的画布用于计算 -->
+    <canvas id="hiddenCanvas" style="display: none;"></canvas>
+    
+    <script>
+        // 会话验证
+        function checkSession() {
+            const sessionToken = localStorage.getItem('qr_hider_session');
+            const sessionTime = localStorage.getItem('qr_hider_session_time');
+            
+            if (!sessionToken || !sessionTime) {
+                window.location.href = 'login.html';
+                return false;
+            }
+            
+            const now = new Date().getTime();
+            const sessionAge = now - parseInt(sessionTime);
+            
+            // 会话有效期24小时
+            if (sessionAge >= 24 * 60 * 60 * 1000) {
+                localStorage.removeItem('qr_hider_session');
+                localStorage.removeItem('qr_hider_session_time');
+                window.location.href = 'login.html';
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // 页面加载时检查会话
+        if (!checkSession()) {
+            // 如果会话无效，脚本将停止执行
+        } else {
+            // 会话有效，加载高级脚本
+            const script = document.createElement('script');
+            script.src = 'advanced-script.js';
+            script.onload = function() {
+                console.log('Advanced script loaded successfully');
+                // 初始化高级功能
+                initializeAdvancedApp();
+                
+                // 设置预设按钮事件
+                setupPresetButtons();
+                
+                // 设置高级模式切换
+                setupAdvancedModeToggle();
+            };
+            document.body.appendChild(script);
+        }
+
+        // 设置预设按钮
+        function setupPresetButtons() {
+            const presetButtons = document.querySelectorAll('.preset-btn');
+            presetButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const preset = e.target.dataset.preset;
+                    applyPreset(preset);
+                });
+            });
+        }
+
+        // 应用预设方案
+        function applyPreset(preset) {
+            const presets = {
+                stealth: {
+                    opacity: 0.15,
+                    blendMode: 'soft-light',
+                    edgeStrength: 0.2,
+                    textureAdaption: 0.9,
+                    colorHarmony: 0.8,
+                    preserveReadability: 0.6
+                },
+                balanced: {
+                    opacity: 0.3,
+                    blendMode: 'multiply',
+                    edgeStrength: 0.5,
+                    textureAdaption: 0.7,
+                    colorHarmony: 0.6,
+                    preserveReadability: 0.8
+                },
+                readable: {
+                    opacity: 0.4,
+                    blendMode: 'overlay',
+                    edgeStrength: 0.8,
+                    textureAdaption: 0.4,
+                    colorHarmony: 0.4,
+                    preserveReadability: 0.9
+                },
+                artistic: {
+                    opacity: 0.25,
+                    blendMode: 'hard-light',
+                    edgeStrength: 0.6,
+                    textureAdaption: 0.8,
+                    colorHarmony: 0.9,
+                    preserveReadability: 0.7
+                }
+            };
+
+            const settings = presets[preset];
+            if (!settings) return;
+
+            // 应用设置
+            Object.keys(settings).forEach(key => {
+                const element = document.getElementById(key);
+                const valueElement = document.getElementById(key + 'Value');
+                
+                if (element) {
+                    element.value = settings[key];
+                    if (valueElement) {
+                        valueElement.textContent = settings[key];
+                    }
+                }
+            });
+
+            // 显示提示
+            showToast(`已应用"${getPresetName(preset)}"预设方案`, 'success');
+        }
+
+        function getPresetName(preset) {
+            const names = {
+                stealth: '极致隐蔽',
+                balanced: '平衡模式', 
+                readable: '易读优先',
+                artistic: '艺术效果'
+            };
+            return names[preset] || preset;
+        }
+
+        // 设置高级模式切换
+        function setupAdvancedModeToggle() {
+            const advancedModeToggle = document.getElementById('advancedMode');
+            const advancedControls = document.getElementById('advancedControls');
+            
+            advancedModeToggle.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    advancedControls.style.display = 'block';
+                    document.getElementById('analysisSection').style.display = 'block';
+                } else {
+                    advancedControls.style.display = 'none';
+                    document.getElementById('analysisSection').style.display = 'none';
+                }
+            });
+        }
+
+        // 工具函数
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'error' ? '#ff4757' : type === 'success' ? '#2ed573' : '#4facfe'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                z-index: 1000;
+                font-weight: 600;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
