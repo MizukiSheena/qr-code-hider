@@ -45,70 +45,61 @@
             
             <div class="style-categories">
                 <div class="category-tabs">
-                    <button class="tab-btn active" data-category="landscape">🏞️ 风景</button>
-                    <button class="tab-btn" data-category="architecture">🏛️ 建筑</button>
-                    <button class="tab-btn" data-category="abstract">🎭 抽象</button>
-                    <button class="tab-btn" data-category="nature">🌿 自然</button>
+                    <button class="tab-btn active" data-category="structured">🎯 结构化风格</button>
                     <button class="tab-btn" data-category="custom">✨ 自定义</button>
                 </div>
 
-                <!-- 风景类 -->
-                <div class="style-grid" id="landscape-styles">
+                <!-- 结构化风格 - 专门优化的3种风格 -->
+                <div class="style-grid" id="structured-styles">
                     <div class="style-option" data-style="winter-village">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzg3Q0VGQSIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+雪景村庄</dGV4dD4KPC9zdmc+" alt="雪景村庄">
-                        <h4>雪景村庄</h4>
-                        <p>温馨的雪地小屋，灯火通明</p>
+                        <div class="style-preview">❄️</div>
+                        <div class="style-content">
+                            <h4>雪景村庄</h4>
+                            <p>深色房屋与白色雪地形成网格对比</p>
+                            <div class="style-tags">
+                                <span class="tag">高对比度</span>
+                                <span class="tag">网格化</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="style-option" data-style="mountain-lake">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzNCODJGNiIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+山湖倒影</dGV4dD4KPC9zdmc+" alt="山湖倒影">
-                        <h4>山湖倒影</h4>
-                        <p>宁静湖面倒映雪山</p>
+                    <div class="style-option" data-style="forest-landscape">
+                        <div class="style-preview">🌲</div>
+                        <div class="style-content">
+                            <h4>森林景观</h4>
+                            <p>深色树木与浅色空地的自然网格</p>
+                            <div class="style-tags">
+                                <span class="tag">自然对比</span>
+                                <span class="tag">有机网格</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="style-option" data-style="forest-path">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzIyQzU1RSIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+森林小径</dGV4dD4KPC9zdmc+" alt="森林小径">
-                        <h4>森林小径</h4>
-                        <p>阳光透过树林的小路</p>
-                    </div>
-                </div>
-
-                <!-- 建筑类 -->
-                <div class="style-grid" id="architecture-styles" style="display: none;">
-                    <div class="style-option" data-style="japanese-temple">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI0Y1OUU0MiIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+日式庭院</dGV4dD4KPC9zdmc+" alt="日式庭院">
-                        <h4>日式庭院</h4>
-                        <p>古朴寺庙与樱花</p>
-                    </div>
-                    <div class="style-option" data-style="modern-city">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzZGNzNEMiIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+现代都市</dGV4dD4KPC9zdmc+" alt="现代都市">
-                        <h4>现代都市</h4>
-                        <p>璀璨夜景与霓虹</p>
-                    </div>
-                </div>
-
-                <!-- 抽象类 -->
-                <div class="style-grid" id="abstract-styles" style="display: none;">
-                    <div class="style-option" data-style="geometric-pattern">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI0VDNDA5OSIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+几何图案</dGV4dD4KPC9zdmc+" alt="几何图案">
-                        <h4>几何图案</h4>
-                        <p>规律的几何美学</p>
+                    <div class="style-option" data-style="architectural-grid">
+                        <div class="style-preview">🏛️</div>
+                        <div class="style-content">
+                            <h4>建筑网格</h4>
+                            <p>现代建筑与广场的几何网格布局</p>
+                            <div class="style-tags">
+                                <span class="tag">几何对比</span>
+                                <span class="tag">规整网格</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 自然类 -->
-                <div class="style-grid" id="nature-styles" style="display: none;">
-                    <div class="style-option" data-style="flower-garden">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI0Y0N0JCOSIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+花园景色</dGV4dD4KPC9zdmc+" alt="花园景色">
-                        <h4>花园景色</h4>
-                        <p>繁花似锦的花园</p>
-                    </div>
-                </div>
-
-                <!-- 自定义 -->
+                <!-- 自定义提示词 -->
                 <div class="custom-prompt" id="custom-styles" style="display: none;">
+                    <div class="prompt-header">
+                        <h4>🎨 自定义艺术描述</h4>
+                        <p>描述您想要的艺术场景，系统会自动添加结构化约束以确保二维码可读性</p>
+                    </div>
                     <div class="prompt-input-group">
-                        <label for="customPrompt">自定义描述:</label>
-                        <textarea id="customPrompt" placeholder="描述你想要的画面风格，例如：一个充满魔幻色彩的森林，有发光的蘑菇和小精灵..."></textarea>
-                        <small>提示：描述越详细，生成效果越好</small>
+                        <label for="customPrompt">场景描述：</label>
+                        <textarea id="customPrompt" placeholder="例如：一个日本庭院，包含深色的建筑和浅色的沙石，按网格模式排列，樱花飘落在石径上..."></textarea>
+                    </div>
+                    <div class="prompt-tips">
+                        <div class="tip-item">💡 <strong>关键要素</strong>：描述深色元素（建筑、树木、岩石等）和浅色元素（天空、雪地、水面等）</div>
+                        <div class="tip-item">🎯 <strong>布局提示</strong>：提及"网格"、"规律分布"、"对比鲜明"等词汇有助于生成</div>
+                        <div class="tip-item">⚡ <strong>效果保障</strong>：系统会自动添加结构约束以确保二维码可读性</div>
                     </div>
                 </div>
             </div>

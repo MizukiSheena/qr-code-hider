@@ -132,11 +132,14 @@
     background: white;
     border: 2px solid #e9ecef;
     border-radius: 15px;
-    padding: 20px;
-    text-align: center;
+    padding: 24px;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    text-align: left;
 }
 
 .style-option:hover {
@@ -148,25 +151,57 @@
 .style-option.selected {
     border-color: #667eea;
     background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
 }
 
-.style-option img {
-    width: 100%;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 10px;
-    margin-bottom: 15px;
+.style-preview {
+    font-size: 56px;
+    line-height: 1;
+    flex-shrink: 0;
+    width: 90px;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    border: 1px solid rgba(102, 126, 234, 0.1);
 }
 
-.style-option h4 {
+.style-content {
+    flex: 1;
+}
+
+.style-content h4 {
     color: #495057;
-    margin-bottom: 8px;
-    font-size: 1.1rem;
+    margin: 0 0 8px 0;
+    font-size: 1.2rem;
+    font-weight: 600;
 }
 
-.style-option p {
+.style-content p {
     color: #6c757d;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    margin: 0 0 12px 0;
+    line-height: 1.5;
+}
+
+.style-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.style-tags .tag {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    border: none;
+    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+}
     margin: 0;
 }
 
@@ -212,6 +247,85 @@
     color: #6c757d;
     margin-top: 8px;
     font-style: italic;
+}
+
+/* 新增：提示词头部样式 */
+.prompt-header {
+    text-align: center;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+}
+
+.prompt-header h4 {
+    color: #495057;
+    margin: 0 0 8px 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.prompt-header p {
+    color: #6c757d;
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+/* 新增：提示词技巧样式 */
+.prompt-tips {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 15px;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.tip-item {
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #495057;
+}
+
+.tip-item:last-child {
+    margin-bottom: 0;
+}
+
+.tip-item strong {
+    color: #667eea;
+    font-weight: 600;
+}
+
+/* 新增：分析进度样式 */
+.analysis-progress {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 20px;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.analysis-progress .progress-text {
+    text-align: center;
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.analysis-progress .progress-bar {
+    background: #e9ecef;
+    border-radius: 10px;
+    height: 8px;
+    overflow: hidden;
+}
+
+.analysis-progress .progress-fill {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    height: 100%;
+    transition: width 0.3s ease;
+    border-radius: 10px;
 }
 
 /* 高级选项 */

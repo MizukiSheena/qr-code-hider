@@ -116,6 +116,9 @@ class QRArtGenerator {
             // 显示分析区域
             document.getElementById('analysisSection').style.display = 'block';
             
+            // 更新进度
+            this.updateAnalysisProgress('正在预处理图像...', 20);
+            
             // 创建Canvas进行图像分析
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
@@ -125,17 +128,29 @@ class QRArtGenerator {
             
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             
-            // 分析二维码结构
-            const qrAnalysis = this.performQRAnalysis(imageData);
+            this.updateAnalysisProgress('正在解析二维码矩阵...', 50);
             
-            // 尝试解码二维码内容（使用简化的检测方法）
+            // 核心：解析二维码为矩阵数据
+            const qrMatrix = await this.parseQRToMatrix(imageData, canvas.width, canvas.height);
+            
+            this.updateAnalysisProgress('正在分析结构特征...', 70);
+            
+            // 分析二维码结构特征
+            const qrAnalysis = this.analyzeQRStructure(qrMatrix);
+            
+            this.updateAnalysisProgress('正在解码内容...', 90);
+            
+            // 尝试解码二维码内容
             const qrContent = await this.decodeQRContent(canvas);
+            
+            this.updateAnalysisProgress('分析完成！', 100);
             
             // 显示分析结果
             this.displayQRAnalysis(qrAnalysis, qrContent);
             
-            // 存储分析数据
+            // 存储分析数据（包含关键的矩阵数据）
             this.qrData = {
+                matrix: qrMatrix,  // 核心：二维码矩阵数据
                 analysis: qrAnalysis,
                 content: qrContent,
                 imageData: imageData
@@ -150,35 +165,204 @@ class QRArtGenerator {
         }
     }
 
-    performQRAnalysis(imageData) {
-        const { width, height, data } = imageData;
-        const analysis = {
-            size: `${width}x${height}`,
-            estimatedVersion: this.estimateQRVersion(width, height),
-            complexity: 'medium',
-            patternDensity: 0,
-            finderPatterns: [],
-            timingPatterns: [],
-            dataModules: []
-        };
-
-        // 转换为灰度并二值化
-        const binaryData = this.convertToBinary(data, width, height);
+    // 核心功能：解析二维码为矩阵数据
+    async parseQRToMatrix(imageData, width, height) {
+        // 1. 图像预处理
+        const processedData = this.preprocessQRImage(imageData, width, height);
         
-        // 检测定位点（Finder Patterns）
-        analysis.finderPatterns = this.detectFinderPatterns(binaryData, width, height);
+        // 2. 检测定位点确定网格
+        const finderPatterns = this.detectFinderPatterns(processedData.binary, width, height);
         
-        // 分析数据密度
-        analysis.patternDensity = this.calculatePatternDensity(binaryData);
-        
-        // 估算复杂度
-        if (analysis.patternDensity > 0.6) {
-            analysis.complexity = 'high';
-        } else if (analysis.patternDensity < 0.3) {
-            analysis.complexity = 'low';
+        if (finderPatterns.length < 3) {
+            throw new Error('无法检测到足够的定位点，请确保图像清晰且包含完整的二维码');
         }
+        
+        // 3. 计算二维码尺寸和模块大小
+        const qrInfo = this.calculateQRDimensions(finderPatterns, width, height);
+        
+        // 4. 提取模块矩阵
+        const matrix = this.extractModuleMatrix(processedData.binary, qrInfo, width, height);
+        
+        return {
+            size: qrInfo.moduleCount,
+            moduleSize: qrInfo.moduleSize,
+            matrix: matrix,
+            finderPatterns: finderPatterns,
+            version: qrInfo.version
+        };
+    }
 
-        return analysis;
+    preprocessQRImage(imageData, width, height) {
+        const { data } = imageData;
+        const gray = new Array(width * height);
+        const binary = new Array(width * height);
+        
+        // 转换为灰度
+        for (let i = 0; i < data.length; i += 4) {
+            const pixelIndex = i / 4;
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            gray[pixelIndex] = 0.299 * r + 0.587 * g + 0.114 * b;
+        }
+        
+        // 自适应阈值二值化
+        const threshold = this.calculateAdaptiveThreshold(gray, width, height);
+        for (let i = 0; i < gray.length; i++) {
+            binary[i] = gray[i] < threshold ? 1 : 0; // 1为黑，0为白
+        }
+        
+        return { gray, binary, threshold };
+    }
+
+    calculateAdaptiveThreshold(grayData, width, height) {
+        // 使用Otsu算法计算最优阈值
+        const histogram = new Array(256).fill(0);
+        
+        // 计算灰度直方图
+        for (let i = 0; i < grayData.length; i++) {
+            const grayValue = Math.floor(grayData[i]);
+            histogram[grayValue]++;
+        }
+        
+        // Otsu阈值计算
+        let sum = 0;
+        for (let i = 0; i < 256; i++) {
+            sum += i * histogram[i];
+        }
+        
+        let sumB = 0;
+        let wB = 0;
+        let wF = 0;
+        let varMax = 0;
+        let threshold = 0;
+        
+        for (let t = 0; t < 256; t++) {
+            wB += histogram[t];
+            if (wB === 0) continue;
+            
+            wF = grayData.length - wB;
+            if (wF === 0) break;
+            
+            sumB += t * histogram[t];
+            
+            const mB = sumB / wB;
+            const mF = (sum - sumB) / wF;
+            
+            const varBetween = wB * wF * (mB - mF) * (mB - mF);
+            
+            if (varBetween > varMax) {
+                varMax = varBetween;
+                threshold = t;
+            }
+        }
+        
+        return threshold;
+    }
+
+    calculateQRDimensions(finderPatterns, width, height) {
+        // 基于定位点计算二维码的实际尺寸
+        const topLeft = finderPatterns.find(p => p.x < width/3 && p.y < height/3);
+        const topRight = finderPatterns.find(p => p.x > width*2/3 && p.y < height/3);
+        const bottomLeft = finderPatterns.find(p => p.x < width/3 && p.y > height*2/3);
+        
+        if (!topLeft || !topRight || !bottomLeft) {
+            // 如果无法精确定位，使用估算
+            const avgPatternSize = finderPatterns.reduce((sum, p) => sum + p.size, 0) / finderPatterns.length;
+            const moduleSize = avgPatternSize / 7; // 定位点是7x7模块
+            const moduleCount = Math.round(Math.min(width, height) / moduleSize);
+            
+            return {
+                moduleSize: moduleSize,
+                moduleCount: moduleCount,
+                version: this.getVersionFromModuleCount(moduleCount)
+            };
+        }
+        
+        // 计算模块大小
+        const horizontalDistance = Math.abs(topRight.x - topLeft.x);
+        const verticalDistance = Math.abs(bottomLeft.y - topLeft.y);
+        const avgDistance = (horizontalDistance + verticalDistance) / 2;
+        
+        // 二维码版本1是21x21模块，定位点间距离是14模块
+        const moduleSize = avgDistance / 14;
+        const moduleCount = Math.round(Math.min(width, height) / moduleSize);
+        
+        return {
+            moduleSize: moduleSize,
+            moduleCount: moduleCount,
+            version: this.getVersionFromModuleCount(moduleCount),
+            topLeft: topLeft,
+            topRight: topRight,
+            bottomLeft: bottomLeft
+        };
+    }
+
+    getVersionFromModuleCount(moduleCount) {
+        // 二维码版本对应的模块数量
+        // 版本1: 21x21, 版本2: 25x25, ..., 版本n: (17+4*n)x(17+4*n)
+        for (let version = 1; version <= 40; version++) {
+            const expectedSize = 17 + 4 * version;
+            if (Math.abs(moduleCount - expectedSize) <= 2) {
+                return version;
+            }
+        }
+        return Math.max(1, Math.min(40, Math.round((moduleCount - 17) / 4)));
+    }
+
+    extractModuleMatrix(binaryData, qrInfo, width, height) {
+        const { moduleCount, moduleSize } = qrInfo;
+        const matrix = [];
+        
+        // 初始化矩阵
+        for (let row = 0; row < moduleCount; row++) {
+            matrix[row] = new Array(moduleCount);
+        }
+        
+        // 从二值化图像中提取每个模块的值
+        for (let row = 0; row < moduleCount; row++) {
+            for (let col = 0; col < moduleCount; col++) {
+                const centerX = Math.round(col * moduleSize + moduleSize / 2);
+                const centerY = Math.round(row * moduleSize + moduleSize / 2);
+                
+                if (centerX < width && centerY < height) {
+                    const pixelIndex = centerY * width + centerX;
+                    matrix[row][col] = binaryData[pixelIndex];
+                } else {
+                    matrix[row][col] = 0; // 超出边界默认为白色
+                }
+            }
+        }
+        
+        return matrix;
+    }
+
+    analyzeQRStructure(qrMatrix) {
+        const { size, matrix, version } = qrMatrix;
+        
+        // 分析矩阵特征
+        let blackModules = 0;
+        let totalModules = size * size;
+        
+        for (let row = 0; row < size; row++) {
+            for (let col = 0; col < size; col++) {
+                if (matrix[row][col] === 1) {
+                    blackModules++;
+                }
+            }
+        }
+        
+        const density = blackModules / totalModules;
+        
+        return {
+            size: `${size}x${size}`,
+            version: version,
+            moduleCount: size,
+            density: density,
+            complexity: density > 0.6 ? 'high' : density < 0.3 ? 'low' : 'medium',
+            blackModules: blackModules,
+            whiteModules: totalModules - blackModules
+        };
     }
 
     convertToBinary(data, width, height) {
@@ -322,14 +506,18 @@ class QRArtGenerator {
             btn.classList.toggle('active', btn.dataset.category === category);
         });
 
-        // 显示对应的风格网格
+        // 显示对应的风格网格或自定义区域
         document.querySelectorAll('.style-grid, .custom-prompt').forEach(grid => {
             grid.style.display = 'none';
         });
         
-        const targetGrid = document.getElementById(`${category}-styles`);
-        if (targetGrid) {
-            targetGrid.style.display = 'grid';
+        if (category === 'custom') {
+            document.getElementById('custom-styles').style.display = 'block';
+        } else {
+            const targetGrid = document.getElementById(`${category}-styles`);
+            if (targetGrid) {
+                targetGrid.style.display = 'grid';
+            }
         }
 
         // 重置选择状态
@@ -377,32 +565,12 @@ class QRArtGenerator {
         document.getElementById('generationStatus').style.display = 'block';
         document.getElementById('resultDisplay').style.display = 'none';
 
+        // 初始化生成参数
+        this.generationAttempts = 0;
+        this.maxAttempts = 5; // 最大尝试次数
+
         try {
-            // 更新状态
-            this.updateGenerationStatus('正在分析二维码结构...', 10);
-            await this.delay(1000);
-
-            // 生成提示词
-            this.updateGenerationStatus('正在生成艺术提示词...', 30);
-            const prompt = this.generateStylePrompt();
-            await this.delay(1000);
-
-            // 调用AI生成
-            this.updateGenerationStatus('正在生成艺术图像...', 50);
-            const generatedImage = await this.callDALLE3API(prompt);
-            await this.delay(2000);
-
-            // 验证二维码
-            this.updateGenerationStatus('正在验证二维码可读性...', 80);
-            const verification = await this.verifyGeneratedQR(generatedImage);
-            await this.delay(1000);
-
-            // 显示结果
-            this.updateGenerationStatus('生成完成！', 100);
-            await this.delay(500);
-
-            this.displayGenerationResult(generatedImage, verification);
-
+            await this.generateWithRetry();
         } catch (error) {
             console.error('生成失败:', error);
             this.showToast('生成失败：' + error.message, 'error');
@@ -410,59 +578,229 @@ class QRArtGenerator {
         }
     }
 
+    async generateWithRetry() {
+        while (this.generationAttempts < this.maxAttempts) {
+            this.generationAttempts++;
+            
+            try {
+                // 更新状态
+                this.updateGenerationStatus(`第${this.generationAttempts}次尝试 - 正在分析二维码结构...`, 10);
+                await this.delay(500);
+
+                // 生成结构化提示词
+                this.updateGenerationStatus(`第${this.generationAttempts}次尝试 - 正在生成结构化提示词...`, 25);
+                const prompt = this.generateStylePrompt();
+                await this.delay(500);
+
+                // 调用AI生成
+                this.updateGenerationStatus(`第${this.generationAttempts}次尝试 - 正在生成艺术图像...`, 50);
+                const generatedImage = await this.callDALLE3API(prompt);
+                await this.delay(1000);
+
+                // 验证二维码可读性
+                this.updateGenerationStatus(`第${this.generationAttempts}次尝试 - 正在验证二维码可读性...`, 75);
+                const verification = await this.verifyGeneratedQR(generatedImage);
+                await this.delay(500);
+
+                // 检查验证结果
+                if (verification.scannable && verification.dataMatch) {
+                    // 成功！显示结果
+                    this.updateGenerationStatus('生成成功！', 100);
+                    await this.delay(500);
+                    this.displayGenerationResult(generatedImage, verification);
+                    return;
+                } else if (this.generationAttempts >= this.maxAttempts) {
+                    // 达到最大尝试次数，显示最佳结果
+                    this.updateGenerationStatus(`已尝试${this.maxAttempts}次，显示最佳结果`, 100);
+                    await this.delay(500);
+                    verification.note = `经过${this.maxAttempts}次尝试，这是质量最佳的结果。如果扫描困难，建议重新生成。`;
+                    this.displayGenerationResult(generatedImage, verification);
+                    return;
+                } else {
+                    // 需要重试
+                    this.updateGenerationStatus(`第${this.generationAttempts}次尝试未达标，准备重试...`, 90);
+                    await this.delay(1000);
+                    
+                    // 调整提示词策略
+                    this.adjustPromptStrategy(verification);
+                }
+
+            } catch (error) {
+                console.error(`第${this.generationAttempts}次尝试失败:`, error);
+                
+                if (this.generationAttempts >= this.maxAttempts) {
+                    throw new Error(`经过${this.maxAttempts}次尝试仍然失败: ${error.message}`);
+                }
+                
+                this.updateGenerationStatus(`第${this.generationAttempts}次尝试失败，准备重试...`, 80);
+                await this.delay(1000);
+            }
+        }
+    }
+
+    adjustPromptStrategy(verification) {
+        // 根据验证结果调整下次生成的策略
+        if (!verification.scannable) {
+            // 如果扫描困难，增强对比度要求
+            this.contrastBoost = (this.contrastBoost || 1) + 0.2;
+        }
+        
+        if (!verification.dataMatch) {
+            // 如果数据不匹配，增加结构约束
+            this.structuralEmphasis = (this.structuralEmphasis || 1) + 0.3;
+        }
+        
+        // 随机化一些参数避免重复生成相同结果
+        this.randomSeed = Math.random();
+    }
+
     generateStylePrompt() {
+        if (!this.qrData || !this.qrData.matrix) {
+            throw new Error('缺少二维码矩阵数据');
+        }
+
         const basePrompt = this.getBasePromptForStyle();
-        const qrConstraints = this.generateQRConstraints();
+        const structuralConstraints = this.generateStructuralConstraints();
         const styleModifiers = this.getStyleModifiers();
         
-        const fullPrompt = `${basePrompt}. ${qrConstraints}. ${styleModifiers}. The image should look natural and artistic while maintaining QR code functionality. High quality, detailed, professional photography style.`;
+        // 核心：基于矩阵生成结构化约束
+        const matrixInstructions = this.generateMatrixInstructions();
         
-        console.log('Generated prompt:', fullPrompt);
+        const fullPrompt = `${basePrompt}. 重要约束：图像必须严格按照以下网格模式排列元素：${matrixInstructions}. ${structuralConstraints}. ${styleModifiers}. 确保深色和浅色区域的对比足够强烈以保持二维码可读性。高质量，艺术化，但结构严格按照指定模式。`;
+        
+        console.log('Generated structured prompt:', fullPrompt);
         return fullPrompt;
     }
 
     getBasePromptForStyle() {
         if (this.selectedStyle) {
+            // 专门为结构化生成优化的3种风格
             const stylePrompts = {
-                'winter-village': 'A cozy snow-covered village with warm lights glowing from windows, wooden houses with snow on roofs, peaceful winter evening atmosphere',
-                'mountain-lake': 'A serene mountain lake reflecting snow-capped peaks, crystal clear water, surrounded by pine trees',
-                'forest-path': 'A magical forest path with sunlight filtering through tall trees, moss-covered ground, mystical atmosphere',
-                'japanese-temple': 'A traditional Japanese temple garden with cherry blossoms, stone lanterns, peaceful zen atmosphere',
-                'modern-city': 'A modern city skyline at night with glowing skyscrapers, neon lights, urban landscape',
-                'geometric-pattern': 'An abstract geometric pattern with clean lines and shapes, modern minimalist design',
-                'flower-garden': 'A beautiful flower garden in full bloom, colorful flowers, butterflies, spring atmosphere'
+                'winter-village': '一个雪景村庄，包含深色的木屋建筑和白色的雪地区域，房屋、树木、道路等元素按网格状自然分布，温暖的灯光从窗户透出，整体呈现冬日黄昏的宁静氛围',
+                'forest-landscape': '一片森林景观，包含深色的树木、岩石和浅色的空地、天空区域，各种自然元素按网格模式有序排列，阳光透过树叶形成自然的明暗对比',
+                'architectural-grid': '一个现代建筑群落，深色的建筑物和浅色的广场、道路形成规整的网格布局，几何形状的建筑元素创造出强烈的视觉对比效果'
             };
-            return stylePrompts[this.selectedStyle] || 'A beautiful artistic scene';
+            return stylePrompts[this.selectedStyle] || '一个具有强烈明暗对比的艺术场景';
         } else {
             // 自定义提示词
-            return document.getElementById('customPrompt').value.trim();
+            const customPrompt = document.getElementById('customPrompt')?.value.trim();
+            return customPrompt || '一个具有强烈明暗对比的艺术场景';
         }
     }
 
-    generateQRConstraints() {
+    // 核心功能：基于二维码矩阵生成精确的结构化指令
+    generateMatrixInstructions() {
+        const { matrix, size } = this.qrData.matrix;
+        
+        // 为了避免提示词过长，我们采用分区域描述的方法
+        const regions = this.divideMatrixIntoRegions(matrix, size);
+        const instructions = [];
+        
+        for (const region of regions) {
+            const description = this.describeRegionPattern(region);
+            instructions.push(description);
+        }
+        
+        return instructions.join('; ');
+    }
+
+    divideMatrixIntoRegions(matrix, size) {
+        // 将矩阵分为9个区域（3x3网格）
+        const regionSize = Math.floor(size / 3);
+        const regions = [];
+        
+        for (let regionRow = 0; regionRow < 3; regionRow++) {
+            for (let regionCol = 0; regionCol < 3; regionCol++) {
+                const region = {
+                    row: regionRow,
+                    col: regionCol,
+                    startRow: regionRow * regionSize,
+                    startCol: regionCol * regionSize,
+                    endRow: Math.min((regionRow + 1) * regionSize, size),
+                    endCol: Math.min((regionCol + 1) * regionSize, size),
+                    pattern: []
+                };
+                
+                // 提取区域模式
+                for (let r = region.startRow; r < region.endRow; r++) {
+                    const row = [];
+                    for (let c = region.startCol; c < region.endCol; c++) {
+                        row.push(matrix[r][c]);
+                    }
+                    region.pattern.push(row);
+                }
+                
+                regions.push(region);
+            }
+        }
+        
+        return regions;
+    }
+
+    describeRegionPattern(region) {
+        const { pattern, row, col } = region;
+        const height = pattern.length;
+        const width = pattern[0].length;
+        
+        // 计算黑白比例
+        let blackCount = 0;
+        let totalCount = height * width;
+        
+        for (let r = 0; r < height; r++) {
+            for (let c = 0; c < width; c++) {
+                if (pattern[r][c] === 1) blackCount++;
+            }
+        }
+        
+        const blackRatio = blackCount / totalCount;
+        
+        // 位置描述
+        const positions = ['左上', '上中', '右上', '左中', '中央', '右中', '左下', '下中', '右下'];
+        const positionName = positions[row * 3 + col];
+        
+        // 密度描述
+        let densityDesc;
+        if (blackRatio > 0.7) {
+            densityDesc = '主要为深色元素';
+        } else if (blackRatio > 0.5) {
+            densityDesc = '深色元素较多';
+        } else if (blackRatio > 0.3) {
+            densityDesc = '深浅元素混合';
+        } else if (blackRatio > 0.1) {
+            densityDesc = '浅色元素较多';
+        } else {
+            densityDesc = '主要为浅色元素';
+        }
+        
+        return `${positionName}区域${densityDesc}`;
+    }
+
+    generateStructuralConstraints() {
         if (!this.qrData) return '';
         
-        const { complexity, patternDensity } = this.qrData.analysis;
+        const { complexity, density } = this.qrData.analysis;
         
         let constraints = [];
         
         // 根据复杂度调整约束
         if (complexity === 'high') {
-            constraints.push('with intricate details and patterns that naturally incorporate geometric elements');
+            constraints.push('需要丰富的细节层次来表现复杂的数据模式');
         } else if (complexity === 'low') {
-            constraints.push('with simple, clean composition and clear contrast areas');
+            constraints.push('保持简洁清晰的视觉对比');
         } else {
-            constraints.push('with balanced composition mixing detailed and simple areas');
+            constraints.push('平衡细节与简洁的视觉效果');
         }
 
-        // 根据图案密度调整
-        if (patternDensity > 0.5) {
-            constraints.push('featuring rich textures and varied light-dark contrasts');
+        // 根据密度调整
+        if (density > 0.6) {
+            constraints.push('整体色调偏深，需要适当的亮点来形成对比');
+        } else if (density < 0.3) {
+            constraints.push('整体色调偏亮，需要适当的暗部来形成对比');
         } else {
-            constraints.push('with clear distinction between light and dark areas');
+            constraints.push('保持良好的明暗对比平衡');
         }
 
-        return constraints.join(', ');
+        return constraints.join('，');
     }
 
     getStyleModifiers() {
@@ -588,8 +926,47 @@ class QRArtGenerator {
     }
 
     updateGenerationStatus(statusText, progress) {
-        document.querySelector('.status-text').textContent = statusText;
-        document.getElementById('progressFill').style.width = `${progress}%`;
+        const statusElement = document.querySelector('.status-text');
+        const progressElement = document.getElementById('progressFill');
+        
+        if (statusElement) statusElement.textContent = statusText;
+        if (progressElement) progressElement.style.width = `${progress}%`;
+    }
+
+    updateAnalysisProgress(statusText, progress) {
+        // 为分析阶段添加专用的进度显示
+        const analysisStatus = document.getElementById('analysisProgress');
+        if (!analysisStatus) {
+            // 如果不存在分析进度元素，创建一个
+            const analysisSection = document.getElementById('analysisSection');
+            if (analysisSection) {
+                const progressHtml = `
+                    <div id="analysisProgress" class="analysis-progress">
+                        <div class="progress-text">${statusText}</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+                `;
+                analysisSection.insertAdjacentHTML('beforeend', progressHtml);
+                return;
+            }
+        }
+        
+        const progressText = analysisStatus?.querySelector('.progress-text');
+        const progressFill = analysisStatus?.querySelector('.progress-fill');
+        
+        if (progressText) progressText.textContent = statusText;
+        if (progressFill) progressFill.style.width = `${progress}%`;
+        
+        // 分析完成后隐藏进度条
+        if (progress >= 100) {
+            setTimeout(() => {
+                if (analysisStatus) {
+                    analysisStatus.style.display = 'none';
+                }
+            }, 1000);
+        }
     }
 
     displayGenerationResult(generatedImageUrl, verification) {
