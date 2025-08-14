@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二维码艺术化工具 - 代码生成版</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .art-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        
+        .upload-section, .art-section, .result-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .art-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .art-option {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .art-option:hover {
+            border-color: #4facfe;
+            transform: translateY(-2px);
+        }
+        
+        .art-option.selected {
+            border-color: #4facfe;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .control-group label {
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .control-group input, .control-group select {
+            padding: 8px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        #preview-canvas, #result-canvas {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        .canvas-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .generate-btn, .download-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.2s ease;
+        }
+        
+        .generate-btn:hover, .download-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .generate-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 二维码艺术化工具</h1>
+            <p>纯代码生成，保证可扫描性</p>
+            <div class="version-badge" style="background: linear-gradient(135deg, #ff6b6b 0%, #ffa726 100%);">v4.0 Code Generation</div>
+        </header>
+
+        <div class="art-container">
+            <!-- 上传区域 -->
+            <div class="upload-section">
+                <h3>📱 上传二维码</h3>
+                <div class="upload-area" id="qrUploadArea">
+                    <input type="file" id="qrInput" accept="image/*" style="display: none;">
+                    <div class="upload-placeholder">
+                        <div class="upload-icon">📱</div>
+                        <p>点击或拖拽上传二维码图片</p>
+                        <small>支持 PNG, JPG, JPEG 格式</small>
+                    </div>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="preview-canvas" style="display: none;"></canvas>
+                </div>
+            </div>
+
+            <!-- 艺术化选项 -->
+            <div class="art-section" id="artSection" style="display: none;">
+                <h3>🎨 选择艺术风格</h3>
+                <div class="art-options">
+                    <div class="art-option" data-style="winter-village">
+                        <div style="font-size: 48px;">❄️</div>
+                        <h4>雪景村庄</h4>
+                        <p>深色房屋，白色雪地</p>
+                    </div>
+                    <div class="art-option" data-style="forest">
+                        <div style="font-size: 48px;">🌲</div>
+                        <h4>森林景观</h4>
+                        <p>深色树木，浅色空地</p>
+                    </div>
+                    <div class="art-option" data-style="city">
+                        <div style="font-size: 48px;">🏙️</div>
+                        <h4>城市夜景</h4>
+                        <p>深色建筑，亮色窗户</p>
+                    </div>
+                    <div class="art-option" data-style="abstract">
+                        <div style="font-size: 48px;">🎭</div>
+                        <h4>抽象几何</h4>
+                        <p>几何图形组合</p>
+                    </div>
+                </div>
+
+                <h4>🔧 详细设置</h4>
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="moduleSize">模块大小</label>
+                        <input type="range" id="moduleSize" min="8" max="20" value="12">
+                        <small id="moduleSizeValue">12px</small>
+                    </div>
+                    <div class="control-group">
+                        <label for="borderSize">边框大小</label>
+                        <input type="range" id="borderSize" min="0" max="8" value="4">
+                        <small id="borderSizeValue">4 模块</small>
+                    </div>
+                    <div class="control-group">
+                        <label for="artIntensity">艺术化强度</label>
+                        <select id="artIntensity">
+                            <option value="low">低 - 保证扫描</option>
+                            <option value="medium" selected>中 - 平衡效果</option>
+                            <option value="high">高 - 更艺术</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="colorScheme">配色方案</label>
+                        <select id="colorScheme">
+                            <option value="classic">经典黑白</option>
+                            <option value="winter" selected>冬日蓝白</option>
+                            <option value="forest">森林绿棕</option>
+                            <option value="sunset">日落橙紫</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="canvas-container">
+                    <button class="generate-btn" id="generateBtn" disabled>🎨 生成艺术二维码</button>
+                </div>
+            </div>
+
+            <!-- 结果展示 -->
+            <div class="result-section" id="resultSection" style="display: none;">
+                <h3>✨ 生成结果</h3>
+                <div class="canvas-container">
+                    <canvas id="result-canvas"></canvas>
+                    <br>
+                    <button class="download-btn" id="downloadBtn">📥 下载图片</button>
+                    <button class="generate-btn" id="regenerateBtn">🔄 重新生成</button>
+                </div>
+                <div id="scanTip" style="margin-top: 20px; padding: 15px; background: #e8f5e8; border-radius: 8px; color: #2d5a2d;">
+                    <strong>📱 扫描提示：</strong>
+                    <ul style="margin: 10px 0 0 20px;">
+                        <li>请在光线充足的环境下扫描</li>
+                        <li>保持手机与图片适当距离（15-30cm）</li>
+                        <li>确保图片完整且清晰显示</li>
+                        <li>如果扫描困难，可以降低艺术化强度重新生成</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="qr-code-art.js"></script>
+</body>
+</html>
