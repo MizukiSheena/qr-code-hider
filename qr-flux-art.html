@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二维码Flux艺术化工具 - AI生成</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .flux-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .workflow-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .step {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .step.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+        
+        .step.completed {
+            border-color: #28a745;
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(32, 201, 151, 0.1) 100%);
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px auto;
+            font-weight: bold;
+        }
+        
+        .step.completed .step-number {
+            background: #28a745;
+        }
+        
+        .canvas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .canvas-item {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .canvas-item h4 {
+            margin: 0 0 15px 0;
+            color: #495057;
+            font-size: 1.1rem;
+        }
+        
+        .canvas-item canvas {
+            max-width: 100%;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+        }
+        
+        .api-config {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+            border-left: 4px solid #667eea;
+        }
+        
+        .api-config h4 {
+            color: #667eea;
+            margin: 0 0 20px 0;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .controlnet-params {
+            background: #e8f5e8;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+            border-left: 4px solid #28a745;
+        }
+        
+        .controlnet-params h4 {
+            color: #28a745;
+            margin: 0 0 20px 0;
+        }
+        
+        .param-slider {
+            margin: 15px 0;
+        }
+        
+        .param-slider label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .param-value {
+            background: #28a745;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        
+        .param-slider input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .param-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #28a745;
+            cursor: pointer;
+        }
+        
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 20px 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .generate-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .generate-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-section {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 1px solid #ffc107;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+            display: none;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e9ecef;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+            border-radius: 6px;
+        }
+        
+        .progress-text {
+            text-align: center;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 10px;
+        }
+        
+        .progress-details {
+            font-size: 14px;
+            color: #6c757d;
+            text-align: center;
+        }
+        
+        .result-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .comparison-item {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .comparison-item.highlight {
+            border-color: #28a745;
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(32, 201, 151, 0.1) 100%);
+        }
+        
+        .verification-results {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        
+        .verification-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #bee5eb;
+        }
+        
+        .verification-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .tips-section {
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8ff 100%);
+            border: 1px solid #c3e6cb;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .tip-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .tip-card h5 {
+            color: #28a745;
+            margin: 0 0 10px 0;
+            font-size: 1.1rem;
+        }
+        
+        .tip-card p {
+            margin: 0;
+            color: #495057;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 二维码Flux艺术化工具</h1>
+            <p>基于Flux AI的专业级ControlNet二维码艺术生成</p>
+            <div class="version-badge" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">v6.0 Flux AI</div>
+        </header>
+
+        <div class="flux-container">
+            <!-- 工作流程步骤 -->
+            <div class="section">
+                <h3>🔄 AI生成工作流程</h3>
+                <div class="workflow-steps">
+                    <div class="step" id="step1">
+                        <div class="step-number">1</div>
+                        <h4>二维码解析</h4>
+                        <p>智能解析二维码结构</p>
+                    </div>
+                    <div class="step" id="step2">
+                        <div class="step-number">2</div>
+                        <h4>ControlNet预处理</h4>
+                        <p>生成控制图像</p>
+                    </div>
+                    <div class="step" id="step3">
+                        <div class="step-number">3</div>
+                        <h4>Flux AI生成</h4>
+                        <p>AI艺术化生成</p>
+                    </div>
+                    <div class="step" id="step4">
+                        <div class="step-number">4</div>
+                        <h4>后处理优化</h4>
+                        <p>增强可扫描性</p>
+                    </div>
+                    <div class="step" id="step5">
+                        <div class="step-number">5</div>
+                        <h4>质量验证</h4>
+                        <p>扫描测试</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 二维码上传 -->
+            <div class="section">
+                <h3>📱 上传二维码</h3>
+                <div class="upload-area" id="qrUploadArea">
+                    <input type="file" id="qrInput" accept="image/*" style="display: none;">
+                    <div class="upload-placeholder">
+                        <div class="upload-icon">📱</div>
+                        <p>点击或拖拽上传二维码图片</p>
+                        <small>支持 PNG, JPG, JPEG 格式，建议尺寸 512x512 以上</small>
+                    </div>
+                </div>
+
+                <div class="canvas-grid" id="canvasGrid" style="display: none;">
+                    <div class="canvas-item">
+                        <h4>📱 原始二维码</h4>
+                        <canvas id="originalCanvas" width="300" height="300"></canvas>
+                    </div>
+                    <div class="canvas-item">
+                        <h4>🎛️ ControlNet控制图</h4>
+                        <canvas id="controlCanvas" width="300" height="300"></canvas>
+                    </div>
+                    <div class="canvas-item">
+                        <h4>🎨 Flux生成结果</h4>
+                        <canvas id="resultCanvas" width="300" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flux AI配置 -->
+            <div class="section" id="configSection" style="display: none;">
+                <h3>🤖 Flux AI配置</h3>
+                
+                <div class="api-config">
+                    <h4>🔑 API设置</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="fluxEndpoint">Flux API端点</label>
+                            <input type="text" id="fluxEndpoint" placeholder="https://api.flux.ai/v1/generate" value="https://api.flux.ai/v1/generate">
+                        </div>
+                        <div class="form-group">
+                            <label for="fluxApiKey">API密钥</label>
+                            <input type="password" id="fluxApiKey" placeholder="输入您的Flux API密钥">
+                        </div>
+                        <div class="form-group">
+                            <label for="fluxModel">模型选择</label>
+                            <select id="fluxModel">
+                                <option value="flux-pro">Flux Pro - 最高质量</option>
+                                <option value="flux-dev" selected>Flux Dev - 平衡性能</option>
+                                <option value="flux-schnell">Flux Schnell - 快速生成</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="artStyle">艺术风格</label>
+                        <select id="artStyle">
+                            <option value="winter-village">❄️ 雪景村庄</option>
+                            <option value="forest-landscape">🌲 森林景观</option>
+                            <option value="japanese-garden">🏯 日式庭院</option>
+                            <option value="city-night">🌃 城市夜景</option>
+                            <option value="abstract-art">🎭 抽象艺术</option>
+                            <option value="custom">✨ 自定义</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="imageSize">输出尺寸</label>
+                        <select id="imageSize">
+                            <option value="512">512x512 - 标准</option>
+                            <option value="768">768x768 - 高清</option>
+                            <option value="1024" selected>1024x1024 - 超高清</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="customPrompt">自定义提示词（可选）</label>
+                    <textarea id="customPrompt" placeholder="例如：A beautiful winter village scene with cozy wooden houses covered in snow, warm lights glowing from windows, surrounded by pine trees and mountains, photorealistic style, high quality"></textarea>
+                </div>
+            </div>
+
+            <!-- ControlNet参数 -->
+            <div class="section" id="controlnetSection" style="display: none;">
+                <h3>🎛️ ControlNet参数</h3>
+                
+                <div class="controlnet-params">
+                    <h4>📊 核心参数</h4>
+                    
+                    <div class="param-slider">
+                        <label>
+                            控制权重 (Control Weight)
+                            <span class="param-value" id="controlWeightValue">0.75</span>
+                        </label>
+                        <input type="range" id="controlWeight" min="0.4" max="1.0" step="0.05" value="0.75">
+                        <small>控制二维码结构保持程度，越高越接近原始结构</small>
+                    </div>
+
+                    <div class="param-slider">
+                        <label>
+                            去噪强度 (Denoising Strength)
+                            <span class="param-value" id="denoisingValue">0.6</span>
+                        </label>
+                        <input type="range" id="denoising" min="0.3" max="0.9" step="0.05" value="0.6">
+                        <small>AI创作自由度，越高艺术效果越强但可能影响扫描</small>
+                    </div>
+
+                    <div class="param-slider">
+                        <label>
+                            CFG Scale
+                            <span class="param-value" id="cfgScaleValue">8.5</span>
+                        </label>
+                        <input type="range" id="cfgScale" min="5" max="15" step="0.5" value="8.5">
+                        <small>提示词遵循程度，影响生成图像与描述的匹配度</small>
+                    </div>
+
+                    <div class="param-slider">
+                        <label>
+                            生成步数 (Steps)
+                            <span class="param-value" id="stepsValue">30</span>
+                        </label>
+                        <input type="range" id="steps" min="20" max="50" step="5" value="30">
+                        <small>生成质量与速度的平衡，步数越多质量越高但耗时更长</small>
+                    </div>
+                </div>
+
+                <div style="text-align: center;">
+                    <button class="generate-btn" id="generateBtn" disabled>🚀 开始AI生成</button>
+                    <button class="generate-btn" id="downloadBtn" style="display: none;">📥 下载结果</button>
+                </div>
+            </div>
+
+            <!-- 生成进度 -->
+            <div class="progress-section" id="progressSection">
+                <div class="progress-text" id="progressText">准备中...</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-details" id="progressDetails">正在初始化AI生成流程...</div>
+            </div>
+
+            <!-- 结果验证 -->
+            <div class="section" id="resultSection" style="display: none;">
+                <h3>✅ 生成结果与验证</h3>
+                
+                <div class="result-comparison">
+                    <div class="comparison-item">
+                        <h4>📱 原始二维码</h4>
+                        <canvas id="originalResult" width="400" height="400"></canvas>
+                    </div>
+                    <div class="comparison-item highlight">
+                        <h4>🎨 Flux艺术化结果</h4>
+                        <canvas id="fluxResult" width="400" height="400"></canvas>
+                    </div>
+                </div>
+
+                <div class="verification-results" id="verificationResults">
+                    <h4>🔍 质量验证报告</h4>
+                    <div class="verification-item">
+                        <span>扫描可读性</span>
+                        <span class="status-badge" id="scanStatus">检测中...</span>
+                    </div>
+                    <div class="verification-item">
+                        <span>数据完整性</span>
+                        <span class="status-badge" id="dataIntegrity">检测中...</span>
+                    </div>
+                    <div class="verification-item">
+                        <span>艺术化评分</span>
+                        <span class="status-badge" id="artScore">评估中...</span>
+                    </div>
+                    <div class="verification-item">
+                        <span>社交平台友好度</span>
+                        <span class="status-badge" id="socialFriendly">分析中...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 使用技巧 -->
+            <div class="tips-section">
+                <h4>💡 Flux AI生成技巧</h4>
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <h5>🎯 参数调优</h5>
+                        <p>控制权重0.7-0.8适合大多数场景，去噪强度0.5-0.7平衡艺术与功能性，CFG Scale 7-10确保提示词有效性。</p>
+                    </div>
+                    <div class="tip-card">
+                        <h5>📝 提示词技巧</h5>
+                        <p>使用具体的场景描述，添加"photorealistic, high quality"等质量词，避免过于复杂的描述。</p>
+                    </div>
+                    <div class="tip-card">
+                        <h5>🔄 多次尝试</h5>
+                        <p>AI生成具有随机性，如果首次结果不满意，可以调整参数重新生成，通常2-3次即可获得理想效果。</p>
+                    </div>
+                    <div class="tip-card">
+                        <h5>📱 扫描优化</h5>
+                        <p>生成后务必测试扫描效果，如果扫描困难可以降低去噪强度或提高控制权重重新生成。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="qr-flux-art.js"></script>
+</body>
+</html>
